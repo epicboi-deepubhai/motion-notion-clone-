@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Check, Copy, Ghost, Globe } from "lucide-react";
 
 interface PublishProps{
-    initalData: Doc<"documents">
+    initialData: Doc<"documents">
 }
 
 const Publish = ({
