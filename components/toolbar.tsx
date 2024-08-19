@@ -9,6 +9,8 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import TextareaAutosize from "react-textarea-autosize";
 import { useCoverImage } from "@/hooks/use-cover-image";
+import { useMediaQuery } from "usehooks-ts";
+import { cn } from "@/lib/utils";
 
 interface ToolbarProps{
     initialData:Doc<"documents">;
@@ -23,6 +25,7 @@ const Toolbar = ({
     const [isEditing, setIsEditing] = useState(false);
     const [value, setValue] = useState(initialData.title);
 
+    const isMobile = useMediaQuery("(max-width:768px)");
     const update = useMutation(api.documents.update);
     const removeIcon = useMutation(api.documents.removeIcon)
 
@@ -81,7 +84,7 @@ const Toolbar = ({
                     </IconPicker>
                     <Button
                         onClick={onRemoveIcon}
-                        className="rounded-full opacity-0 group-hover/icon:opacity-100 transition text-muted-foreground text-xs"
+                        className={cn("rounded-full opacity-0 group-hover/icon:opacity-100 transition text-muted-foreground text-xs", isMobile&&"opacity-40")}
                         variant={"outline"}
                         size={"icon"}>
                         <X className="h-4 w-4"/>
