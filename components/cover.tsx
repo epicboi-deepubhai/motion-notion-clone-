@@ -11,6 +11,7 @@ import { useParams } from "next/navigation";
 import { Button } from "./ui/button";
 import Image from "next/image";
 import { Skeleton } from "./ui/skeleton";
+import { useMediaQuery } from "usehooks-ts";
 
 interface CoverProps{
     url?: string;
@@ -22,6 +23,7 @@ const Cover = ({ url, preview }: CoverProps) => {
     const params = useParams();
     const coverImage = useCoverImage();
     const removeCoverImage = useMutation(api.documents.removeCoverImage);
+    const isMobile = useMediaQuery("(max-width:768px)");
   
     const onRemove = async () => {
       if (url) await edgestore.publicFiles.delete({ url: url });
@@ -40,7 +42,7 @@ const Cover = ({ url, preview }: CoverProps) => {
         (<Image src={url} fill alt="Cover" className="object-cover" />)
         }
         {url && !preview && (
-          <div className="opacity-0 group-hover:opacity-100 absolute bottom-5 right-5 flex items-center gap-x-2">
+          <div className={cn("opacity-0 group-hover:opacity-100 absolute bottom-5 right-5 flex items-center gap-x-2", isMobile&&"opacity-100")}>
             <Button
               onClick={() => coverImage.onReplace(url)}
               className="text-muted-foreground text-xs"
