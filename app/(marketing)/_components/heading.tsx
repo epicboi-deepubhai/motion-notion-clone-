@@ -6,6 +6,7 @@ import { imageOptimizer } from "next/dist/server/image-optimizer";
 import Link from "next/link";
 import { useConvexAuth } from "convex/react";
 import { Spinner } from "@/components/spinner";
+import { SignUpButton } from "@clerk/clerk-react";
 
 export const Heading = () => {
   const {isAuthenticated, isLoading} = useConvexAuth();
@@ -35,11 +36,11 @@ export const Heading = () => {
         )}
         {!isAuthenticated&&!isLoading&&(
           <>
-          <Button asChild>
-            <Link href="/documents">
+            <SignUpButton mode="modal">
+              <Button>
               Get Started! <ArrowRight className="h-4 w-4 ml-2" />
-            </Link>
-          </Button>
+              </Button>
+            </SignUpButton>
           </>
         )}
 
