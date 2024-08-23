@@ -85,7 +85,7 @@ const Publish = ({
                             <Button
                                 onClick={onCopy}
                                 disabled={copied}
-                                variant={copied?"outline":"default"}
+                                variant={copied?"checkList":"default"}
                                 className="h-8 rounded-l-none"
                                 >
                                 {copied?(<Check className="h-4 w-4 text-green-500"/>):(<Copy className="h-4 w-4"/>)}
