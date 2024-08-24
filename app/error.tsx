@@ -9,15 +9,15 @@ const error = () => {
         <div className="h-full flex flex-col items-center justify-center space-y-4">
             <Image 
                 src="/error.png"
-                height={300}
-                width={300}
+                height={450}
+                width={450}
                 alt="Error"
                 className="dark:hidden"
                 />
             <Image 
                 src="/error-dark.png"
-                height={300}
-                width={300}
+                height={450}
+                width={450}
                 alt="Error"
                 className="hidden dark:block"
                 />
