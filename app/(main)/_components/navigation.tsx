@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { ChevronsLeft, MenuIcon, Plus, PlusCircle, Search, Settings, Trash } from "lucide-react";
+import { ChevronsLeft, CircleUserRoundIcon, GlobeIcon, MenuIcon, Plus, PlusCircle, Search, Settings, Trash } from "lucide-react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { ElementRef, useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
@@ -149,8 +149,15 @@ const Navigation = () => {
                     icon={PlusCircle}/>
                 </div>
                 <div className="mt-4">
+                    <Item
+                        label="Personal Documents"
+                        icon={CircleUserRoundIcon}
+                        button ={false}/>
                     <DocumentsList />
                     <Item onClick={handleCreate} label="Add a Page" icon={Plus} />
+                    <div className="mt-4">
+                        <DocumentsList listtype="colab"/>
+                    </div>
                     <Popover>
                         <PopoverTrigger className="w-full mt-4">
                         <Item label="Trash" icon={Trash} />

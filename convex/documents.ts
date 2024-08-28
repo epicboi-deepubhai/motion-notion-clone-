@@ -70,6 +70,24 @@ export const getSidebar = query({
     },
 });
 
+export const getSidebarCollab = query({
+    handler: async(ctx)=>{
+        const identity = await ctx.auth.getUserIdentity();
+        if(!identity){
+            throw new Error("Not authenticated");
+        }
+        const userId = identity.subject;
+
+        const collaboratorDocuments = await ctx.db
+        .query("documents")
+        .withSearchIndex("search_collaborator", (q)=>q.search("collaborators",userId))
+        .filter((q) => q.eq(q.field("isArchived"), false))
+        .collect();
+
+        return collaboratorDocuments;
+    },
+});
+
 export const create = mutation({
     args:{
         title: v.string(),
@@ -88,6 +106,7 @@ export const create = mutation({
             userId,
             isArchived: false,
             isPublished: false,
+            collaborators: [],
         })
         return document;
     }
@@ -162,6 +181,59 @@ export const restore = mutation({
     }
 })
 
+export const getAcessCode = mutation({
+    args:{
+        id: v.id("documents")
+    }, handler: async (ctx, args)=>{
+        const identity = await ctx.auth.getUserIdentity();
+        if(!identity){
+            throw new Error("Not authenticated");
+        }
+        const userId = identity.subject;
+        const existingDocument = await ctx.db.get(args.id);
+        if(!existingDocument){
+            throw new Error("Not found")
+        };
+        if(existingDocument.userId!== userId){
+            throw new Error("Unauthorized");
+        };
+        if(existingDocument.accessCode!=null){
+            return existingDocument
+        }else{
+            const document = await ctx.db.patch(args.id,{
+                accessCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
+            });
+            return document;
+        }
+    },
+})
+
+export const addCollaborator = mutation({
+    args: {
+        id: v.id("documents"),
+    },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) {
+            throw new Error("Not authenticated");
+        }
+        const userId = identity.subject;
+        const existingDocument = await ctx.db.get(args.id);
+        if (!existingDocument) {
+          throw new Error("Document not found");
+        }
+        if (existingDocument.collaborators.includes(userId)) {
+          return existingDocument;
+        }
+        const updatedCollaborators = [...existingDocument.collaborators, userId];
+        const document = await ctx.db.patch(args.id, {
+          collaborators: updatedCollaborators,
+        });
+        return document;
+    },
+});
+
+
 export const remove = mutation({
     args:{id:v.id("documents")},
     handler: async(ctx, args)=>{
@@ -192,12 +264,20 @@ export const getSearch = query({
         }
         const userId = identity.subject;
 
-        const documents = await ctx.db
+        const userDocuments = await ctx.db
             .query("documents")
             .withIndex("by_user", (q)=> q.eq("userId", userId))
             .filter((q)=>q.eq(q.field("isArchived"), false))
             .order("desc")
             .collect();
+
+        const collaboratorDocuments = await ctx.db
+            .query("documents")
+            .withSearchIndex("search_collaborator", (q)=>q.search("collaborators",userId))
+            .filter((q) => q.eq(q.field("isArchived"), false))
+            .collect();
+
+        const documents = [...userDocuments, ...collaboratorDocuments];
 
         return documents;
     }
@@ -223,7 +303,9 @@ export const getById = query({
 
         const userId = identity.subject;
         if(document.userId!==userId){
-            throw new Error("Unauthorized")
+            if(userId !in document.collaborators){
+                throw new Error("Unauthorized")
+            }
         }
 
         return document;
@@ -242,7 +324,7 @@ export const update = mutation({
     handler: async (ctx,args)=>{
         const identity = await ctx.auth.getUserIdentity();
         if(!identity){
-            throw new Error("Unauthorized");
+            throw new Error("Not authenticated");
         }
 
         const userId = identity.subject;
@@ -254,11 +336,14 @@ export const update = mutation({
         }
 
         if(existingDocument.userId !==userId){
-            throw new Error("Unauthorized")
+            if(userId !in existingDocument.collaborators){
+                throw new Error("Unauthorized")
+            }
         }
 
         const document = await ctx.db.patch(args.id,{
             ...rest,
+            lastEditedBy: userId
         });
 
         return document;

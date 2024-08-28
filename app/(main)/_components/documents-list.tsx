@@ -7,17 +7,19 @@ import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Item } from "./items";
 import { cn } from "@/lib/utils";
-import { FileIcon } from "lucide-react";
+import { FileIcon, GlobeIcon, } from "lucide-react";
 
 interface DocumentsListProp{
     parentDocumentId?: Id<"documents">;
     level?: number;
     data?: Doc<"documents">[];
+    listtype?: string;
 }
 
 export const DocumentsList = ({
     parentDocumentId,
     level=0,
+    listtype="Personal"
 }:DocumentsListProp) => {
     const params = useParams();
     const router = useRouter();
@@ -30,15 +32,15 @@ export const DocumentsList = ({
         }));
     };
 
-    const documents = useQuery(api.documents.getSidebar, {
-        parentDocument: parentDocumentId
-    });
-
     const onRedirect=(documentId:string)=>{
         router.push(`/documents/${documentId}`);
     };
 
-    if (documents===undefined){
+    if(listtype==="Personal"){
+      const documents = useQuery(api.documents.getSidebar, {
+          parentDocument: parentDocumentId
+      });
+      if (documents===undefined){
         return(
             <>
                 <Item.Skeleton level={level}/>
@@ -51,8 +53,7 @@ export const DocumentsList = ({
             </>
         );
     };
-
-    return (
+      return (
         <>
           <p
             className={cn(
@@ -84,4 +85,39 @@ export const DocumentsList = ({
           ))}
         </>
       );
+
+    }else{
+          const documents = useQuery(api.documents.getSidebarCollab);
+          if (documents===undefined||documents.length===0){
+            return(
+                <>
+                </>
+            );
+        };
+          return (
+            <>
+              <Item
+                label="Collaborative Documents"
+                icon={GlobeIcon}
+                button={false}/>
+              {documents.map((document) => (
+                <div key={document._id}>
+                  <Item
+                    id={document._id}
+                    label={document.title}
+                    onClick={() => onRedirect(document._id)}
+                    icon={FileIcon}
+                    documentIcon={document.icon}
+                    active={params.documentId === document._id}
+                    onExpand={() => onExpand(document._id)}
+                  />
+                </div>
+              ))}
+            </>
+          );
+    }
+
+
+
+
 }
