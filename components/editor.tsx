@@ -28,7 +28,7 @@ const Editor = ({
     }
 
     const editorChange= ()=>{
-        onChange(JSON.stringify(editor, null, 2))
+        onChange(JSON.stringify(editor.topLevelBlocks, null, 2))
     }
 
     const editor: BlockNoteEditor = useCreateBlockNote({
