@@ -4,11 +4,13 @@ import { Heros } from "./_components/heros";
 
 export default function MarketingPage() {
   return (
-    <div className="min-h-screen flex flex-col">
-      <div className="flex flex-col items-center justify-center md:justify-start text-center gap-y-8 flex-1 px-6 pb-10">
-        <Heading />
+    <div className="flex flex-col min-h-fit">
+      <main className="flex flex-col md:flex-row items-center justify-center text-center md:gap-x-0 lg:gap-x-0 px-6">
+        <div className="ml-6 relative -top-12">
+          <Heading />
+        </div>
         <Heros />
-      </div>
+      </main>
       <Footer />
     </div>
   );

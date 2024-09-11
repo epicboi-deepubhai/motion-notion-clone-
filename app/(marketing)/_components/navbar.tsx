@@ -29,15 +29,18 @@ export const Navbar = () => {
                 Login
               </Button>
             </SignInButton>
-            <SignUpButton mode="modal">
-              <Button size="sm">Get Jotion free</Button>
-            </SignUpButton>
+            <div className="hidden md:flex">
+              <SignUpButton mode="modal">
+                <Button size="sm">Get Motion free</Button>
+              </SignUpButton>
+            </div>
+
           </>
         )}
         {isAuthenticated && !isLoading && (
           <>
             <Button variant="ghost" size="sm" asChild>
-              <Link href="/documents">Enter Jotion</Link>
+              <Link href="/documents">Enter Motion</Link>
             </Button>
             <UserButton afterSignOutUrl="/" />
           </>
