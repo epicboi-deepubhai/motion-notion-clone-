@@ -44,7 +44,7 @@ export default function RootLayout({
         defaultTheme="system"
         enableSystem
         disableTransitionOnChange
-        storageKey="Jotion-Theme"
+        storageKey="Motion-Theme"
         >
           <Toaster position="bottom-center"/>
           <ModalProvider/>
